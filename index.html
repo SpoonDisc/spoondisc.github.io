@@ -1,554 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rice Purity Test</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', Arial, sans-serif;
-            background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
-            margin: 0;
-            padding: 0;
-            color: #222;
-            overflow-x: hidden;
-        }
-        .container {
-            width: 100%;
-            max-width: 1100px;
-            margin: 0 auto;
-            background: #fff;
-            border-radius: 0;
-            box-shadow: none;
-            padding: 0 24px;
-            position: relative;
-            box-sizing: border-box;
-        }
-        @media (min-width: 701px) {
-            .container {
-                padding-left: 48px;
-                padding-right: 48px;
-            }
-        }
-        @media (max-width: 700px) {
-            .container {
-                padding: 16px 8px;
-            }
-            h1 {
-                font-size: 2rem;
-            }
-            .questions-section {
-                padding: 12px 2px;
-            }
-        }
-        .questions-section {
-            border-radius: 0;
-            box-shadow: none;
-            padding: 24px 0;
-        }
-        .question {
-            margin-bottom: 16px;
-            padding: 10px 16px;
-            border-bottom: 1px solid #e5e7eb;
-            transition: background 0.2s;
-            position: relative;
-        }
-        .question label {
-            font-size: 1.05rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: space-between;
-        }
-        .question-text {
-            flex: 1;
-        }
-        .explanation-btn {
-            margin-left: 8px;
-            margin-right: 12px;
-            background: linear-gradient(90deg, #6366f1 60%, #a5b4fc 100%);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 4px 14px;
-            font-size: 1.05rem;
-            cursor: pointer;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(99,102,241,0.10);
-            letter-spacing: 0.01em;
-            transition: background 0.2s, box-shadow 0.2s;
-            outline: none;
-            border: 2px solid #a5b4fc;
-            position: relative;
-            display: inline-block;
-        }
-        .explanation-btn:hover {
-            background: linear-gradient(90deg, #4338ca 60%, #6366f1 100%);
-            box-shadow: 0 4px 16px rgba(99,102,241,0.18);
-            border-color: #6366f1;
-        }
-        .explanation-btn:active {
-            background: #4338ca;
-            box-shadow: 0 4px 16px rgba(99,102,241,0.18);
-            border-color: #4338ca;
-        }
-        /* Popup styles */
-        .explanation-popup {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%) scale(0.97);
-            background: linear-gradient(120deg, #eef2ff 0%, #f8fafc 100%);
-            color: #222;
-            border-radius: 28px;
-            border: 1.5px solid #c7d2fe;
-            box-shadow: 0 12px 36px rgba(60,80,180,0.18), 0 2px 8px rgba(99,102,241,0.10);
-            padding: 40px 28px 32px 28px;
-            z-index: 9999;
-            min-width: 240px;
-            max-width: 92vw;
-            font-size: 1.18rem;
-            text-align: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.28s, transform 0.28s cubic-bezier(.4,1.4,.6,1);
-        }
-        .explanation-popup.active {
-            display: block;
-            opacity: 1;
-            pointer-events: auto;
-            transform: translate(-50%, -50%) scale(1.03);
-        }
-        }
-        .explanation-popup.active {
-            /* ...existing code... */
-            animation: popupFadeIn 0.38s cubic-bezier(.4,1.4,.6,1);
-        }
-        }
-        .explanation-popup .close-btn {
-            margin-top: 28px;
-            background: linear-gradient(90deg, #6366f1 60%, #a5b4fc 100%);
-            color: #fff;
-            border: none;
-            border-radius: 24px;
-            padding: 12px 36px;
-            font-size: 1.15rem;
-            cursor: pointer;
-            font-weight: 600;
-            box-shadow: 0 4px 16px rgba(99,102,241,0.18);
-            letter-spacing: 0.02em;
-            transition: background 0.22s, box-shadow 0.22s, transform 0.18s;
-            outline: none;
-            border: 2px solid #a5b4fc;
-            position: relative;
-            display: inline-block;
-            text-shadow: 0 1px 2px rgba(60,80,180,0.10);
-        }
-        .explanation-popup .close-btn:hover {
-            background: linear-gradient(90deg, #4338ca 60%, #6366f1 100%);
-            box-shadow: 0 6px 24px rgba(99,102,241,0.22);
-            border-color: #6366f1;
-            transform: translateY(-2px) scale(1.04);
-        }
-        .explanation-popup .close-btn:active {
-            background: #4338ca;
-            box-shadow: 0 2px 8px rgba(99,102,241,0.10);
-            border-color: #4338ca;
-            transform: scale(0.98);
-        }
-        .header {
-            display: flex;
-            align-items: flex-end;
-            justify-content: flex-start;
-            gap: 18px;
-            margin-bottom: 16px;
-            min-height: 60px;
-            padding-left: 8px;
-        }
-        .header-icon {
-            width: 54px;
-            height: 54px;
-            background: linear-gradient(135deg, #6366f1 60%, #a5b4fc 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            color: #fff;
-            font-size: 2.2rem;
-            box-shadow: 0 2px 8px rgba(99,102,241,0.12);
-        }
-        h1 {
-            text-align: left;
-            font-size: 2.7rem;
-            font-weight: 700;
-            margin-bottom: 0;
-            color: #3730a3;
-            display: flex;
-            align-items: flex-end;
-            line-height: 1.1;
-            padding-top: 0;
-        }
-        p.intro {
-            text-align: center;
-            font-size: 1.15rem;
-            margin-bottom: 36px;
-            color: #555;
-        }
-        form {
-            margin-bottom: 24px;
-        }
-        .questions-section {
-            background: #f3f4f6;
-            border-radius: 16px;
-            padding: 24px 18px;
-            box-shadow: 0 2px 8px rgba(60,80,180,0.04);
-        }
-        .question {
-            margin-bottom: 16px;
-            padding: 10px 0;
-            border-bottom: 1px solid #e5e7eb;
-            transition: background 0.2s;
-        }
-        .question label {
-            font-size: 1.05rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: space-between;
-        }
-        .question-text {
-            flex: 1;
-        }
-        .question input[type="checkbox"] {
-            accent-color: #6366f1;
-            width: 20px;
-            height: 20px;
-        }
-        .submit-btn {
-            display: block;
-            width: 100%;
-            background: linear-gradient(90deg, #6366f1 60%, #2563eb 100%);
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            padding: 18px;
-            font-size: 1.35rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 32px;
-            box-shadow: 0 2px 8px rgba(99,102,241,0.10);
-            letter-spacing: 0.02em;
-            transition: background 0.2s, box-shadow 0.2s;
-            outline: none;
-            border: 2px solid #a5b4fc;
-        }
-        .submit-btn:hover {
-            background: linear-gradient(90deg, #4338ca 60%, #2563eb 100%);
-            box-shadow: 0 4px 16px rgba(99,102,241,0.18);
-            border-color: #6366f1;
-        }
-        .submit-btn:active {
-            background: #4338ca;
-            box-shadow: 0 4px 16px rgba(99,102,241,0.18);
-            border-color: #4338ca;
-        }
-        .result {
-            text-align: center;
-            font-size: 2rem;
-            margin-top: 40px;
-            color: #16a34a;
-            font-weight: 700;
-            background: #e0ffe0;
-            border-radius: 12px;
-            padding: 24px 0;
-            box-shadow: 0 2px 12px rgba(22,163,74,0.08);
-            animation: fadeIn 0.7s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes popupFadeIn {
-            from { opacity: 0; transform: translate(-50%, -50%) scale(0.97); }
-            to { opacity: 1; transform: translate(-50%, -50%) scale(1.03); }
-        }
-        @media (max-width: 700px) {
-            .header {
-                gap: 12px;
-                min-height: 48px;
-                padding-left: 0;
-            }
-            .header-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 1.5rem;
-                align-items: flex-end;
-            }
-            h1 {
-                font-size: 1.5rem;
-                padding-top: 0;
-                align-items: flex-end;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="header-icon">🍚</div>
-            <h1>Rice Purity Test</h1>
-        </div>
-        <p class="intro">A fun self-assessment of life experiences. Check each item you have done. The lower your score, the less pure you are!</p>
-        <form id="riceTestForm">
-            <div class="questions-section">
-                <div id="questions"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Purity Test</title>
+    <script type="module" crossorigin src="/assets/index-B5aHhF7p.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CKyMUVaT.css">
+  </head>
+  <body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white px-2 sm:px-4">
+    <div id="main-container" class="min-h-screen flex flex-col items-center justify-center">
+      <div class="w-full sm:w-[90%] md:w-[75%] max-w-6xl shadow-2xl bg-gray-800/80 border border-gray-700 overflow-hidden flex flex-col flex-1">
+
+        <!-- Shared Section Wrapper -->
+        <div class="flex-1 px-2 xs:px-4 sm:px-6 md:px-10 lg:px-14 py-6 sm:py-8 md:py-10 flex flex-col justify-center w-full">
+
+          <!-- Question Section -->
+          <section id="question-container" class="section-content w-full flex flex-col min-h-[60vh] sm:min-h-[400px] flex-1">
+            <div id="question-indicator" class="text-xs sm:text-sm font-semibold uppercase tracking-wide text-blue-400 mb-2 sm:mb-4 text-center"></div>
+            <div class="flex flex-col flex-1 justify-between h-full min-h-[60vh]">
+              <div class="flex flex-col justify-center items-center text-center flex-1">
+                <h2 id="question-text" class="text-2xl sm:text-3xl font-extrabold mb-2 sm:mb-4 text-white min-h-[2rem] sm:min-h-[2.5rem] w-full"></h2>
+                <p id="explanation-text" class="text-sm sm:text-base text-blue-200 min-h-[1.5rem] sm:min-h-[2rem] w-full"></p>
+              </div>
+              <div class="flex flex-col xs:flex-row justify-center gap-3 xs:gap-6 w-full pb-1 mt-auto">
+                <button id="yes-button" class="w-full xs:w-32 py-3 rounded-lg bg-green-600 hover:bg-green-700 active:bg-green-800 text-lg font-semibold shadow focus:outline-none focus:ring-2 focus:ring-green-400 transition">
+                  Yes
+                </button>
+                <button id="no-button" class="w-full xs:w-32 py-3 rounded-lg bg-red-600 hover:bg-red-700 active:bg-red-800 text-lg font-semibold shadow focus:outline-none focus:ring-2 focus:ring-red-400 transition">
+                  No
+                </button>
+              </div>
             </div>
-            <button type="submit" class="submit-btn">Calculate Purity Score</button>
-        </form>
-        <div id="result" class="result" style="display:none;"></div>
-        <div id="explanationPopup" class="explanation-popup">
-            <div id="explanationText"></div>
-            <button class="close-btn" onclick="hideExplanationPopup()">Close</button>
+          </section>
+
+          <!-- Result Section -->
+          <section id="result-content" class="section-content hidden w-full">
+            <div class="min-h-[180px] sm:min-h-[220px] md:min-h-[280px] flex flex-col justify-center items-center text-center space-y-4 sm:space-y-6 w-full">
+              <h2 class="text-2xl sm:text-3xl font-bold text-blue-400">Your Score</h2>
+              <p class="text-base sm:text-lg text-gray-200">You scored <span id="final-score">XX</span>/100</p>
+              <button id="show-answers" class="px-4 sm:px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 font-semibold transition">
+                See Answers
+              </button>
+            </div>
+          </section>
+
+          <!-- Answers Section -->
+          <section id="answers-content" class="section-content hidden w-full">
+            <div class="flex flex-col items-center text-center space-y-4 sm:space-y-6 w-full">
+              <div class="w-full flex flex-col items-center">
+                <h2 class="text-5xl sm:text-8xl font-bold text-blue-400 mb-1 sm:mb-2">Answers</h2>
+                <p id="answers-score" class="text-lg sm:text-2xl text-gray-200 mb-4 sm:mb-8"></p>
+              </div>
+              <ul id="answers-list" class="text-left text-sm sm:text-base text-gray-200 list-disc list-inside w-full"></ul>
+            </div>
+          </section>
+
+          <!-- Error Section -->
+          <section id="error-content" class="section-content hidden w-full">
+            <div class="min-h-[180px] sm:min-h-[220px] md:min-h-[280px] flex flex-col justify-center items-center text-center space-y-2 sm:space-y-4 w-full">
+              <h2 class="text-lg sm:text-2xl text-red-500 font-bold">Invalid Checksum</h2>
+              <p class="text-gray-200 text-sm sm:text-base">The link appears to be corrupted or incomplete.</p>
+              <p class="text-xs sm:text-sm text-gray-400">Please regenerate the link or try copying it again.</p>
+            </div>
+          </section>
+
         </div>
+      </div>
+
+      <!-- Share Modal -->
+      <div id="share-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center px-2 sm:px-4">
+        <div class="bg-gray-900 border border-blue-500 rounded-xl shadow-lg p-4 sm:p-8 w-full max-w-xs sm:max-w-md space-y-3 sm:space-y-4 text-gray-200">
+          <h3 class="text-lg sm:text-xl font-bold text-blue-400">Share Your Results</h3>
+          <p class="text-sm sm:text-base">Your score will always be shared. You may optionally include your answers too.</p>
+          <label class="flex items-center gap-2 sm:gap-3">
+            <input type="checkbox" id="include-answers" class="h-5 w-5 text-blue-500 focus:ring-blue-400" />
+            <span>Include my answers</span>
+          </label>
+          <div class="flex justify-end gap-2 sm:gap-4 pt-2 sm:pt-4">
+            <button id="share-modal-cancel" class="px-3 sm:px-4 py-2 rounded bg-gray-700 hover:bg-gray-800">Cancel</button>
+            <button id="share-modal-confirm" class="px-3 sm:px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 font-semibold">Generate Link</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dev Panel -->
+      <!--
+      <div id="dev-panel" class="fixed bottom-4 sm:bottom-6 left-2 sm:left-6 z-40">
+        <div class="bg-gray-800 border border-gray-600 rounded-lg shadow p-2 sm:p-4 text-xs text-gray-300 flex flex-col gap-1 sm:gap-2 w-36 sm:w-48">
+          <div class="font-bold text-xs sm:text-sm text-white mb-1">Dev Panel</div>
+          <button id="dev-yes-all" class="bg-green-600 hover:bg-green-700 text-white py-1 px-2 rounded">Yes to all</button>
+          <button id="dev-no-all" class="bg-red-600 hover:bg-red-700 text-white py-1 px-2 rounded">No to all</button>
+          <button id="dev-random-all" class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2 rounded">Random to all</button>
+        </div>
+      </div>
+      -->
     </div>
-    <script>
-        // Rice Purity Test questions (100 standard questions)
-        // Each question is an object: { text, explanation }
-        const riceQuestions = [
-            { text: "Held hands romantically?", explanation: "Held hands with someone you like in a romantic way." },
-            { text: "Been on a date?", explanation: "Gone out with someone for a romantic or social activity." },
-            { text: "Been in a relationship?", explanation: "Had a boyfriend, girlfriend, or similar romantic partner." },
-            { text: "Danced without leaving room for Jesus?", explanation: "Danced very closely with someone in a romantic way." },
-            { text: "Kissed a non-family member?", explanation: "Kissed someone not related to you." },
-            { text: "Kissed a non-family member on the lips?", explanation: "Kissed someone on the lips who is not family." },
-            { text: "French kissed?", explanation: "Kissed someone using your tongue." },
-            { text: "French kissed in public?", explanation: "Kissed someone with tongue where others could see." },
-            { text: "Kissed on the neck?", explanation: "Kissed someone on the neck." },
-            { text: "Kissed while laying down?", explanation: "Kissed someone while lying down." },
-            { text: "Given or received a visible love mark?", explanation: "Given or received a hickey (bruise from kissing)." },
-            { text: "Kissed or been kissed on the chest?", explanation: "Kissed or been kissed on the chest." },
-            { text: "Kissed someone below the waist?", explanation: "Kissed someone on the lower body." },
-            { text: "Kissed continuously for more than two hours?", explanation: "Kissed someone for more than two hours without stopping." },
-            { text: "Played a game involving removing clothing?", explanation: "Played a game like strip poker where you or others took off clothes." },
-            { text: "Seen or been seen by another person in an intimate setting?", explanation: "Been naked or seen someone else naked in a private or romantic situation." },
-            { text: "Engaged in private self-exploration?", explanation: "Touched your own body for pleasure (masturbation)." },
-            { text: "Viewed adult-themed media alone?", explanation: "Watched or looked at sexual or explicit material by yourself." },
-            { text: "Engaged in private self-exploration while someone else was present?", explanation: "Touched yourself for pleasure while someone else was in the room." },
-            { text: "Been caught during private self-exploration?", explanation: "Someone saw you while you were touching yourself for pleasure." },
-            { text: "Used an object during private activity?", explanation: "Used a non-body object (like a toy) for self-pleasure." },
-            { text: "Seen or read explicit adult content?", explanation: "Viewed or read material that is sexual or explicit in nature." },
-            { text: "Given or received a sensual massage?", explanation: "Given or received a massage that was intended to be pleasurable or arousing." },
-            { text: "Simulated intimacy while fully clothed?", explanation: "Pretended or acted out romantic or sexual activity while keeping your clothes on." },
-            { text: "Undressed or been undressed by someone you’re attracted to?", explanation: "Taken off your clothes or had someone else take off your clothes in a romantic or sexual context." },
-            { text: "Showered with someone you're attracted to?", explanation: "Taken a shower with someone you have romantic or sexual feelings for." },
-            { text: "Touched or been touched on the backside?", explanation: "Touched or been touched on the buttocks." },
-            { text: "Touched or been touched on the chest?", explanation: "Touched or been touched on the chest or breast area." },
-            { text: "Touched or been touched on private areas?", explanation: "Touched or been touched on the genitals or other private parts." },
-            { text: "Experienced unfulfilled physical tension with a partner?", explanation: "Felt sexual desire or tension with someone but did not act on it." },
-            { text: "Experienced a climax due to someone else's action?", explanation: "Reached orgasm because of something another person did." },
-            { text: "Sent a message with suggestive content?", explanation: "Sent a text or message that hinted at romantic or sexual interest." },
-            { text: "Sent or received private photos of an intimate nature?", explanation: "Sent or received photos that show nudity or sexual activity." },
-            { text: "Engaged in intimate activity over video call?", explanation: "Participated in romantic or sexual activity using a video chat." },
-            { text: "Been unfaithful in a relationship?", explanation: "Cheated on a boyfriend, girlfriend, or partner by being romantic or sexual with someone else." },
-            { text: "Purchased protection for intimate activity?", explanation: "Bought items like condoms or birth control to prevent pregnancy or disease during sex." },
-            { text: "Provided physical affection below the waist?", explanation: "Touched or kissed someone on the genitals or lower body." },
-            { text: "Received physical affection below the waist?", explanation: "Had someone touch or kiss you on the genitals or lower body." },
-            { text: "Engaged in intimate exchange involving bodily fluids?", explanation: "Participated in sexual activity where bodily fluids (like semen) were exchanged." },
-            { text: "Used a personal item during partnered intimacy?", explanation: "Used a sex toy or similar object during sex with another person." },
-            { text: "Spent the night with someone you're romantically involved with?", explanation: "Slept overnight with someone you are dating or attracted to." },
-            { text: "Been interrupted during an intimate moment?", explanation: "Had someone walk in or interrupt you during a romantic or sexual activity." },
-            { text: "Asked a roommate to leave for privacy during intimacy?", explanation: "Asked someone you live with to leave so you could have privacy for romantic or sexual activity." },
-            { text: "Consumed alcohol outside of religious context?", explanation: "Drank alcohol for fun or social reasons, not as part of a religious ceremony." },
-            { text: "Played a drinking game?", explanation: "Played a game where drinking alcohol is part of the rules." },
-            { text: "Been intoxicated?", explanation: "Drank enough alcohol to feel drunk or lose control." },
-            { text: "Hid intoxication from authority figures?", explanation: "Tried to hide from parents, teachers, or police that you were drunk." },
-            { text: "Experienced memory loss due to alcohol?", explanation: "Forgot what happened after drinking alcohol (a blackout)." },
-            { text: "Used tobacco?", explanation: "Smoked cigarettes, cigars, or used chewing tobacco." },
-            { text: "Used marijuana?", explanation: "Used cannabis (weed) in any form." },
-            { text: "Used substances stronger than marijuana?", explanation: "Used drugs that are more powerful or dangerous than marijuana." },
-            { text: "Used illegal or highly dangerous substances?", explanation: "Used drugs that are illegal or considered very risky to your health." },
-            { text: "Been sent to school administration for discipline?", explanation: "Been sent to the principal or school office for breaking rules." },
-            { text: "Been placed on disciplinary probation or suspension?", explanation: "Been officially punished by your school, such as being suspended or put on probation." },
-            { text: "Urinated outdoors?", explanation: "Gone to the bathroom outside, not in a toilet." },
-            { text: "Swam without clothing?", explanation: "Gone swimming naked (skinny dipping)." },
-            { text: "Run nude in public?", explanation: "Run outside without any clothes on where others could see you." },
-            { text: "Seen an exotic performance?", explanation: "Watched a show or dance that is meant to be sexually exciting." },
-            { text: "Had authorities called on you?", explanation: "Had police or other officials called because of something you did." },
-            { text: "Escaped from authorities?", explanation: "Ran away or hid from police or other officials." },
-            { text: "Been questioned by authorities?", explanation: "Been asked questions by police or other officials about your actions." },
-            { text: "Been placed in handcuffs by authorities?", explanation: "Had police or other officials put handcuffs on you." },
-            { text: "Been arrested?", explanation: "Been officially taken into custody by police." },
-            { text: "Been found guilty of a crime?", explanation: "Been judged by a court or officials as having broken the law." },
-            { text: "Been convicted of a serious crime?", explanation: "Been found guilty of a major crime, such as theft or assault." },
-            { text: "Committed an act of public property damage?", explanation: "Damaged something that belongs to the public, like graffiti or breaking a window." },
-            { text: "Engaged in full physical intimacy?", explanation: "Had sex with another person." },
-            { text: "Engaged in full intimacy three or more times in one night?", explanation: "Had sex three or more times in a single night." },
-            { text: "Been with multiple people in one night?", explanation: "Had sex with more than one person in the same night." },
-            { text: "Had full intimacy 10 or more times in your life?", explanation: "Had sex at least ten times in your life." },
-            { text: "Experienced multiple physical positions during intimacy?", explanation: "Tried different sexual positions during sex." },
-            { text: "Been with someone shortly after meeting them?", explanation: "Had sex with someone soon after meeting them." },
-            { text: "Been intimate in a vehicle?", explanation: "Had sex in a car or other vehicle." },
-            { text: "Been intimate outdoors?", explanation: "Had sex outside, such as in a park or forest." },
-            { text: "Been intimate in a public place?", explanation: "Had sex somewhere other people could see, like a bathroom or park." },
-            { text: "Been intimate in a pool or hot tub?", explanation: "Had sex in a swimming pool or hot tub." },
-            { text: "Been intimate in someone else’s bed?", explanation: "Had sex in a bed that does not belong to you or your partner." },
-            { text: "Been intimate while a parent was home?", explanation: "Had sex while your parent(s) were in the house." },
-            { text: "Been intimate with someone else present in the room (not involved)?", explanation: "Had sex while another person was in the room but not participating." },
-            { text: "Engaged in intimacy while traveling by air?", explanation: "Had sex on an airplane." },
-            { text: "Engaged in a casual encounter without a relationship?", explanation: "Had sex with someone you were not dating or in a relationship with." },
-            { text: "Traveled a long distance primarily for intimacy?", explanation: "Traveled far from home mainly to have sex with someone." },
-            { text: "Been with someone significantly older or younger than you (3+ year gap)?", explanation: "Had sex with someone who is at least three years older or younger than you." },
-            { text: "Been with someone during their first experience?", explanation: "Had sex with someone who had never had sex before." },
-            { text: "Engaged in intimacy without using protection?", explanation: "Had sex without using condoms or other birth control." },
-            { text: "Taken a test related to intimate health due to concern?", explanation: "Got tested for sexually transmitted infections (STIs) or pregnancy because you were worried." },
-            { text: "Tested positive for an intimate health condition?", explanation: "Received a positive result for an STI or other sexual health issue." },
-            { text: "Been involved in a three-person intimate encounter?", explanation: "Had sex with two other people at the same time (a threesome)." },
-            { text: "Attended a group intimacy gathering?", explanation: "Participated in a group sexual activity (more than three people)." },
-            { text: "Engaged in separate intimacy with multiple people in one day?", explanation: "Had sex with more than one person in a single day, but not at the same time." },
-            { text: "Had five or more lifetime intimacy partners?", explanation: "Had sex with at least five different people in your life." },
-            { text: "Been recorded during an intimate moment?", explanation: "Been filmed or photographed while having sex." },
-            { text: "Engaged in intimacy during menstruation?", explanation: "Had sex while you or your partner was on their period." },
-            { text: "Engaged in intimacy involving the back route?", explanation: "Had anal sex." },
-            { text: "Worried about a possible pregnancy?", explanation: "Been concerned that you or your partner might be pregnant after sex." },
-            { text: "Been pregnant or caused a pregnancy?", explanation: "You have been pregnant or someone became pregnant because of you." },
-            { text: "Exchanged money or items for intimacy?", explanation: "Given or received money, gifts, or favors in exchange for sex." },
-            { text: "Secretly watched others in private moments?", explanation: "Secretly watched other people when they thought they were alone." },
-            { text: "Engaged in inappropriate activity with a family member?", explanation: "Participated in sexual activity with someone you are related to (incest)." },
-            { text: "Engaged in inappropriate activity involving animals?", explanation: "Participated in sexual activity with an animal (bestiality)." }
-        ];
 
-        // Cookie helpers
-        function setCookie(name, value, days) {
-            let expires = "";
-            if (days) {
-                const date = new Date();
-                date.setTime(date.getTime() + (days*24*60*60*1000));
-                expires = "; expires=" + date.toUTCString();
-            }
-            document.cookie = name + "=" + (value || "") + expires + "; path=/";
-        }
-        function getCookie(name) {
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for(let i=0;i < ca.length;i++) {
-                let c = ca[i];
-                while (c.charAt(0)==' ') c = c.substring(1,c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-            }
-            return null;
-        }
-
-        // Render questions
-        const questionsDiv = document.getElementById('questions');
-        riceQuestions.forEach((q, i) => {
-            const div = document.createElement('div');
-            div.className = 'question';
-            // Mobile: show button, Desktop: hover/click
-            div.innerHTML = `<label><input type="checkbox" name="q${i}" value="1"> <span class="question-text" data-explanation="${q.explanation}">${q.text}</span><button type="button" class="explanation-btn" data-explanation="${q.explanation}">?</button></label>`;
-            questionsDiv.appendChild(div);
-        });
-        // Show explanation popup (centered, smooth)
-        function showExplanation(explanation) {
-            const popup = document.getElementById('explanationPopup');
-            document.getElementById('explanationText').textContent = explanation;
-            popup.classList.add('active');
-        }
-        function hideExplanationPopup() {
-            const popup = document.getElementById('explanationPopup');
-            popup.classList.remove('active');
-        }
-        // Desktop: show explanation on click
-        function desktopExplanationHandler(e) {
-            const explanation = e.target.getAttribute('data-explanation');
-            if (!explanation) return;
-            showExplanation(explanation);
-        }
-        // Mobile: show explanation on button click
-        function mobileExplanationHandler(e) {
-            const explanation = e.target.getAttribute('data-explanation');
-            if (!explanation) return;
-            showExplanation(explanation);
-        }
-        // Detect mobile
-        function isMobile() {
-            return window.matchMedia('(max-width: 700px)').matches;
-        }
-        // Add listeners (run after DOM is ready)
-        function addExplanationListeners() {
-            document.querySelectorAll('.question-text').forEach(span => {
-                if (!isMobile()) {
-                    span.addEventListener('click', desktopExplanationHandler);
-                    span.style.cursor = 'pointer';
-                }
-            });
-            document.querySelectorAll('.explanation-btn').forEach(btn => {
-                if (isMobile()) {
-                    btn.addEventListener('click', mobileExplanationHandler);
-                } else {
-                    btn.style.display = 'none';
-                }
-            });
-        }
-        addExplanationListeners();
-        // Hide popup on outside click
-        document.addEventListener('mousedown', function(e) {
-            const popup = document.getElementById('explanationPopup');
-            if (popup.classList.contains('active') && !popup.contains(e.target) && !e.target.classList.contains('explanation-btn')) {
-                hideExplanationPopup();
-            }
-        });
-
-        // Restore checkbox states from cookie
-        function restoreCheckboxes() {
-            console.log("Restoring");
-            const saved = getCookie('riceTestAnswers');
-            if (saved) {
-                const arr = saved.split(',');
-                arr.forEach((val, i) => {
-                    const cb = document.querySelector(`[name='q${i}']`);
-                    if (cb) cb.checked = val === '1';
-                });
-            }
-        }
-        restoreCheckboxes();
-
-        // Save checkbox states to cookie
-        function saveCheckboxes() {
-            console.log("Saving");
-            const arr = [];
-            riceQuestions.forEach((_, i) => {
-                arr.push(document.querySelector(`[name='q${i}']`).checked ? '1' : '0');
-            });
-            setCookie('riceTestAnswers', arr.join(','), 365);
-        }
-
-        // Save on change
-// Use MutationObserver to save checkboxes on any change
-const observer = new MutationObserver(() => {
-    saveCheckboxes();
-});
-document.querySelectorAll('.questions-section input[type="checkbox"]').forEach(cb => {
-    observer.observe(cb, { attributes: true, attributeFilter: ['checked'] });
-    cb.addEventListener('change', saveCheckboxes);
-});
-
-        document.getElementById('riceTestForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            saveCheckboxes();
-            const total = riceQuestions.length;
-            let checked = 0;
-            riceQuestions.forEach((_, i) => {
-                if (document.querySelector(`[name='q${i}']`).checked) checked++;
-            });
-            const score = total - checked;
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('result').textContent = `Your Rice Purity Score: ${score} / ${total}`;
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        });
-    </script>
-</body>
+  </body>
 </html>
